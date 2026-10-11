@@ -92,5 +92,20 @@ async function cycle(){
     try{await runMarket(market,symbol);}catch(e){console.error(market,e.message);try{await event(market,symbol,'ERROR',e.message);}catch{}}
   }
 }
-console.log('Paper-only worker started; enabled:',env.BOT_ENABLED==='true');
-while(true){await cycle();await sleep(interval*1000);}
+
+console.log('Paper-only worker started; enabled:', env.BOT_ENABLED === 'true');
+
+if (env.RUN_ONCE === 'true') {
+  try {
+    await cycle();
+    console.log('Single cycle completed.');
+  } finally {
+    await pool.end();
+  }
+} else {
+  while (true) {
+    await cycle();
+    await sleep(interval * 1000);
+  }
+}
+
