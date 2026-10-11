@@ -2,6 +2,15 @@ import 'dotenv/config';
 import pg from 'pg';
 
 const env = process.env;
+
+if (env.WORKER_SMOKE_TEST === 'true') {
+  if (env.PAPER_ONLY !== 'true') {
+    throw new Error('Safety lock: PAPER_ONLY must equal true');
+  }
+  console.log('Worker smoke test passed. No database or trading operations executed.');
+  process.exit(0);
+}
+
 if (env.PAPER_ONLY !== 'true') throw new Error('Safety lock: PAPER_ONLY must equal true');
 if (!env.DATABASE_URL) throw new Error('DATABASE_URL missing');
 const pool = new pg.Pool({ connectionString: env.DATABASE_URL, max: 3, ssl: env.DATABASE_URL.includes('localhost') ? false : { rejectUnauthorized: true } });
