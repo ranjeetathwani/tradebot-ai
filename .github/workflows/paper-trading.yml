@@ -1,0 +1,28 @@
+
+name: TradeBot AI - Worker Setup Test
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  worker-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install worker dependencies
+        run: npm install --no-save --ignore-scripts pg dotenv
+
+      - name: Verify worker dependencies
+        run: node --input-type=module -e "import('pg').then(() => console.log('PostgreSQL package ready'))"
