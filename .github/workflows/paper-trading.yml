@@ -26,3 +26,12 @@ jobs:
 
       - name: Verify worker dependencies
         run: node --input-type=module -e "import('pg').then(() => console.log('PostgreSQL package ready'))"
+
+      - name: Run worker safety smoke test
+        env:
+          PAPER_ONLY: 'true'
+          WORKER_SMOKE_TEST: 'true'
+          BOT_ENABLED: 'false'
+          RUN_ONCE: 'true'
+        run: node worker/index.js
+
