@@ -1,0 +1,2 @@
+import{NextResponse}from'next/server';import{backtest}from'../../../lib/engine';import{sampleCandles}from'../../../lib/data';
+export async function POST(req:Request){try{const body=await req.json();const fast=Number(body.fast??10),slow=Number(body.slow??30);return NextResponse.json({source:'SIMULATED',...backtest(sampleCandles(),fast,slow)})}catch(e){return NextResponse.json({error:e instanceof Error?e.message:'Invalid request'},{status:400})}}

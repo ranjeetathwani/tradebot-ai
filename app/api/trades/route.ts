@@ -1,0 +1,1 @@
+import{NextResponse}from'next/server';export async function GET(){return NextResponse.json({message:'Trade history is stored through authenticated Supabase client access. No real-money orders are supported.'})}
