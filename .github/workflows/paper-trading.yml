@@ -34,29 +34,50 @@ jobs:
           BOT_ENABLED: 'false'
           RUN_ONCE: 'true'
         run: node worker/index.js
+
       - name: Test Supabase database connection
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          PAPER_ONLY: 'true'
+          BOT_ENABLED: 'false'
         run: |
           node --input-type=module <<'NODE'
           import pg from 'pg';
+          import fs from 'node:fs';
+
+          if (!process.env.DATABASE_URL) {
+            throw new Error('DATABASE_URL secret is missing');
+          }
 
           const pool = new pg.Pool({
             connectionString: process.env.DATABASE_URL,
             connectionTimeoutMillis: 10000,
-            ssl: { rejectUnauthorized: true }
+            ssl: {
+              ca: fs.readFileSync('prod-ca-2021.crt', 'utf8'),
+              rejectUnauthorized: true
+            }
           });
 
           try {
-            const result = await pool.query(
-              "SELECT current_database() AS database_name, EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'bot_settings') AS schema_ready"
-            );
+            const result = await pool.query(`
+              SELECT
+                current_database() AS database_name,
+                EXISTS (
+                  SELECT 1
+                  FROM information_schema.tables
+                  WHERE table_schema = 'public'
+                    AND table_name = 'bot_settings'
+                ) AS schema_ready
+            `);
+
             if (!result.rows[0].schema_ready) {
               throw new Error('Trading schema not found');
             }
-            console.log('Supabase connection successful. Trading schema found. No trades executed.');
+
+            console.log(
+              'Supabase connection successful. Trading schema found. No trades executed.'
+            );
           } finally {
             await pool.end();
           }
           NODE
-
