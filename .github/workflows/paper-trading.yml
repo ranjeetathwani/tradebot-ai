@@ -42,6 +42,13 @@ jobs:
           BOT_ENABLED: 'false'
         run: node worker/market-analysis.js
 
+        
+      - name: Test paper trading engine
+        env:
+          PAPER_ONLY: 'true'
+          BOT_ENABLED: 'false'
+        run: node worker/paper-engine.js
+
 
       - name: Test Supabase database connection
         env:
