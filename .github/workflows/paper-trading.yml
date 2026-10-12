@@ -35,6 +35,14 @@ jobs:
           RUN_ONCE: 'true'
         run: node worker/index.js
 
+      
+      - name: Test BTC market analysis
+        env:
+          PAPER_ONLY: 'true'
+          BOT_ENABLED: 'false'
+        run: node worker/market-analysis.js
+
+
       - name: Test Supabase database connection
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
