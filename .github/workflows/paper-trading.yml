@@ -49,6 +49,14 @@ jobs:
           BOT_ENABLED: 'false'
         run: node worker/paper-engine.js
 
+        
+      - name: Test read-only database reader
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          PAPER_ONLY: 'true'
+          BOT_ENABLED: 'false'
+        run: node worker/database-reader.js
+
 
       - name: Test Supabase database connection
         env:
